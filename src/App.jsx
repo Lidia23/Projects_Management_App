@@ -94,6 +94,33 @@ function App() {
       }
     })
   }
+    // const handleAddTask = (text) => {
+  //   fetch("/user-added/task", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       text: text,
+  //       projectId: projectState.selectedProjectId,
+  //     }),
+  //   })
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       throw new Error('Failed to add task');
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(newTask => {
+  //     setProjectState(prevState => ({
+  //       ...prevState,
+  //       tasks: [newTask, ...prevState.tasks],
+  //     }));
+  //   })
+  //   .catch(error => {
+  //     console.error('Error adding task:', error);
+  //   });
+  // }
   const handleDeleteTask = (id) => {
     setProjectState((prevState) => {
       const updatedTasks = prevState.tasks.filter((task) => task.id !== id);
