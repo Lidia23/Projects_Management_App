@@ -1,7 +1,7 @@
 import NoProjectSelected from './components/NoProjectSelected.jsx';
 import NewProject from './components/NewProject.jsx';
 import ProjectSidebar from './components/ProjectSidebar.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SelectedProjects from './components/SelectedProjects.jsx';
 function App() {
   const [projectState, setProjectState] = useState({
@@ -25,13 +25,19 @@ function App() {
         ...projectData,
         id: projectId,
       };
+      const updatedProjects = [...prevState.projects, newProject];
+
+      // Save projects data to Local Storage
+      localStorage.setItem('projects', JSON.stringify(updatedProjects));
+  
       return {
         ...prevState,
         selectedProjectId: undefined,
-        projects: [...prevState.projects, newProject],
+        projects: updatedProjects,
       }
     })
   }
+
   const handleCancelAddProject = () => {
     setProjectState(prevState => {
       return {
@@ -50,13 +56,24 @@ function App() {
   }
   const handleDeleteProject = () => {
     setProjectState((prevState) => {
+      const updatedProjects = prevState.projects.filter((project) => project.id !== prevState.selectedProjectId);
+      localStorage.setItem('projects', JSON.stringify(updatedProjects));
       return {
         ...prevState,
         selectedProjectId: undefined,
-        projects: prevState.projects.filter((project) => project.id !== prevState.selectedProjectId)
+        projects: updatedProjects
       }
     })
-  }
+  }  
+  useEffect(() => {
+    const savedProjects = JSON.parse(localStorage.getItem('projects'));
+    if (savedProjects) {
+      setProjectState(prevState => ({
+        ...prevState,
+        projects: savedProjects
+      }));
+    }
+  }, []);
   const handleAddTask = (text) => {
     setProjectState(prevState => {
       const taskId = Math.random();
@@ -65,10 +82,12 @@ function App() {
         projectId: prevState.selectedProjectId,
         id: taskId,
       };
+      const updatedTasks = [newTask, ...prevState.tasks];
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
       if (newTask.projectId === prevState.selectedProjectId) {
         return {
           ...prevState,
-          tasks: [newTask, ...prevState.tasks],
+          tasks: updatedTasks,
         };
       } else {
         return prevState; // Return the previous state if the project ID doesn't match
@@ -77,12 +96,23 @@ function App() {
   }
   const handleDeleteTask = (id) => {
     setProjectState((prevState) => {
+      const updatedTasks = prevState.tasks.filter((task) => task.id !== id);
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));  
       return {
         ...prevState,
-        tasks: prevState.tasks.filter((task) => task.id !== id)
+        tasks: updatedTasks
       }
     })
   }
+ useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+      setProjectState(prevState => ({
+        ...prevState,
+        tasks: savedTasks
+      }));
+    }
+  }, []);
 
   const selectedProject = projectState.projects.find((project) => project.id === projectState.selectedProjectId);
   let tasksForSelectedProject = [];
