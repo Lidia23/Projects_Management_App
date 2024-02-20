@@ -6,9 +6,28 @@ import SelectedProjects from './components/SelectedProjects.jsx';
 function App() {
   const [projectState, setProjectState] = useState({
     selectedProjectId: undefined, //undefined if you are gonna select one of the user project, or null if you are gonna add one.
-    projects: []
+    projects: [],
+    tasks: []
   });
 
+  const handleAddTask = (text) => {
+    setProjectState((prevState) => {
+      const taskId = Math.random();
+      const newTask = {
+        text: text,
+        projectId: prevState.selectedProjectId,
+        id: taskId,
+      };
+      return {
+        ...prevState,
+        tasks: [newTask, ...prevState.tasks],
+      }
+    })
+    console.log(projectState.projects);
+  }
+  const handleDeleteTask = () => {
+
+  }
   const handleStartAddProject = () => {
     setProjectState(prevState => {
       return {
@@ -18,15 +37,16 @@ function App() {
     })
   }
   const handleAddProject = (projectData) => {
-    setProjectState(prevState => {
+    setProjectState((prevState) => {
+      const projectId = Math.random();
       const newProject = {
         ...projectData,
-        id: Math.random()
+        id: projectId,
       };
       return {
         ...prevState,
         selectedProjectId: undefined,
-        projects: [...prevState.projects, newProject]
+        projects: [...prevState.projects, newProject],
       }
     })
   }
@@ -45,7 +65,7 @@ function App() {
         selectedProjectId: id,
       }
     })
-  }  
+  }
   const handleDeleteProject = () => {
     setProjectState(prevState => {
       return {
@@ -57,8 +77,15 @@ function App() {
       }
     })
   }
+
+
   const selectedProject = projectState.projects.find((project) => project.id === projectState.selectedProjectId);
-  let content = <SelectedProjects project={selectedProject} onDelete={handleDeleteProject}/>;
+  let content = <SelectedProjects project={selectedProject}
+    onDelete={handleDeleteProject}
+    onAddTask={handleAddTask}
+    onDeleteTask={handleDeleteTask}
+    tasks={projectState.tasks} />;
+
   if (projectState.selectedProjectId === null) {
     content = <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
   } else if (projectState.selectedProjectId === undefined) {
